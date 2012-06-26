@@ -14,11 +14,11 @@ The library in its current state only accepts a handful of params. It will be ex
 
 ### Load The Spark
 ```php
-$this->load->spark('navigation/0.0.1');
+$this->load->spark('navigation/version');
 ```
 OR
 ```php
-$autoload['sparks'] = array( 'navigation/0.0.1' );
+$autoload['sparks'] = array( 'navigation/version' );
 ```
 ### Configuring Navigation Defaults
 Currently the library is very limited when it comes to configuration. This area of the library is planned to be greatly improved and re-worked. For now you can set the `<li>` class name, and the prepend/append before and after the anchor.
