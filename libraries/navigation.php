@@ -62,14 +62,14 @@ class Navigation {
      * @return string         returns compiled navigation
      */
     private static function _build( $url, $title, $params = array() ){
-		/** if the passed url is equal to the current uri_string, set this li active */
-		if( $url == self::$ci->uri->uri_string() || $url == current_url() ){
-			$built = self::$nav_prepend_active_begin.self::$nav_active_class.self::$nav_prepend_active_end.anchor( $url, $title ).self::$nav_append."\n";
-		/** else if the passed url is equal to the base_url(), set this li active */
-		}else{
-			$built = self::$nav_prepend.anchor( $url, $title ).self::$nav_append."\n";
-		}
-		return $built;
+        /** if the passed url is equal to the current uri_string, set this li active */
+        if( $url == self::$ci->uri->uri_string() || $url == current_url() ){
+            $built = self::$nav_prepend_active_begin.self::$nav_active_class.self::$nav_prepend_active_end.anchor( $url, $title, $params ).self::$nav_append."\n";
+        /** else if the passed url is equal to the base_url(), set this li active */
+        }else{
+            $built = self::$nav_prepend.anchor( $url, $title, $params ).self::$nav_append."\n";
+        }
+        return $built;
     }
 
 }//end lib

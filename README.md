@@ -41,7 +41,7 @@ Open the library `sparks/navigation/0.0.1/navigation.php`
 ```
 
 ### Build Your Navigation
-Building a single navigation element can be done by passing a singular link to the `build()` method.
+Building a single navigation element can be done by passing a singular link to the `build()` method. If you are using Bootstrap you will put the following code in place of your `<li>` elements in your navigation.
 
 ```php
 <?php
@@ -53,11 +53,20 @@ Building a single navigation element can be done by passing a singular link to t
 echo Navigation::build('blog/post', 'Add New Blog Post', array('id' => 'add-new-blog-post') );
 ?>
 ```
+This will output something like:
 
-Or you can build multiple navigations at once, and define url, title, params all individually.
+```html
+	<li class="active"><a href="http://example.com/blog/post" id="add-new-blog-post">Add New Blog Post</a></li>
+```
+
+Or you can build multiple navigations at once, and define `url, title, params` all individually.
 
 ```php
 <?php
+//If you don't like your views cluttered with app logic
+//this could be defined in your controller
+//and even pulled from a db table, just pass the variable
+//to your view, and reference it in the build() method.
 $nav = array(
 	array(
 		'url' => 'blog/post',
@@ -83,7 +92,21 @@ echo Navigation::build($nav);
 ?>
 ```
 
+This will output something like:
+
+```html
+	<li class="active"><a href="http://example.com/blog/post" id="add-new-blog-post">Add New Blog Post</a></li>
+	<li><a href="http://example.com/">Home</a></li>
+	<li><a href="http://google.com/">Google Search</a></li>
+```
+
+
+
 # Change Log
+
+**0.0.2**
+
+ - fixed: typo that wasn't allowing parameters on href's to be passed
 
 **0.0.1**
 
