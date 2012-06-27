@@ -2,15 +2,23 @@
 class Navigation {
 
 	/** CI instance */
-	private static $ci;
-	/** @var array built navigation items */
-	protected static $_navs;
+	protected $ci;
 
-    public static $active_class = 'active';
-    public static $element_type = 'li';
+    /**
+     * class name for a nav_element that is active
+     * @var string
+     */
+    public $active_class = 'active';
+    /**
+     * html element type for a nav_element
+     * @var string
+     */
+    public $element_type = 'li';
+
+    public $nav_elements;
 
     function __construct($params = array()) {
-        self::$ci = & get_instance();
+        $this->ci = & get_instance();
     }
 
     /**
@@ -25,7 +33,7 @@ class Navigation {
      * @param  array $params additional parameters to pass to the _build() function to add to hrefs
      * @return string         returns final navigation elements
      */
-    public static function build( $url, $title = NULL, $params = array() ){
+    public function build( $url, $title = NULL, $params = array() ){
 
     	/** are we dealing with one nav item, or multiple? */
     	if( is_array($url) ){
@@ -38,27 +46,51 @@ class Navigation {
 	    		}
 
     			/** invoke the builder  */
-    			$built[] = self::_build( $u['url'], $u['title'], $u['params'] );
+    			$built[] = $this->_build( $u['url'], $u['title'], $u['params'] );
     		}
 
     		/** @var string implode the navigation to create a string of li's to be used in html */
-    		$built_url = implode($built);
+    		$this->nav_elements = implode($built);
 
     	/** only dealing with one url item */
     	}else{
-    		$built = self::_build( $url, $title, $params );
+    		$this->nav_elements = $this->_build( $url, $title, $params );
     	}
-    	return $built_url;
+    	return $this->nav_elements;
     }
 
     /**
-     * [_prepend description]
+     * allows the element_type to be set externally
+     * from the library.
+     * @param string $elementType html element type, e.g; li, div, nav
+     */
+    public function set_element_type( $elementType ){
+        $this->element_type = $elementType;
+        return $this;
+    }
+
+    /**
+     * allows the class name for an active nav element
+     * to be set externally from the library.
+     * @param string $activeClass class name of the active nav element
+     */
+    public function set_active_class( $activeClass ){
+        $this->active_class = $activeClass;
+        return $this;
+    }
+
+    /**
+     * Create the starting nav_element
+     *
+     * This defaults to the class object defaults of an <li> element
+     * with a active class of "active".
+     *
      * @param  boolean $active whether the navigation item is active or not
      * @param  array   $params parameters to be passed
      * @return string          returns back the prepended navigation element
      */
-    private static function _prepend( $active = false, $params = array() ){
-        $prepend = '<'.self::$element_type;
+    private function _prepend( $active = false, $params = array() ){
+        $prepend = '<'.$this->element_type;
 
         /** did we pass any class names in? If so, implode the array into a string */
         if ( isset($params['class']) ){
@@ -67,7 +99,7 @@ class Navigation {
         /** Is the navigation item active? If so prepend the active_class object */
         if ($active){
             /** Since the nav element is active, add the active class */
-            $prepend .= ' class="'.self::$active_class;
+            $prepend .= ' class="'.$this->active_class;
             /** Were other classes defined, if true then add them to the nav element */
             if( isset($classes) ){
                 $prepend .= ' '.$classes.'"';
@@ -79,12 +111,12 @@ class Navigation {
         }else{
             /** were other classes defined, if true then add them to the nav element */
             if( isset($classes) ){
-                $prepend .= ' class="'.$classes.'"';
+                $prepend .= ' class="'.$classes.'" ';
             }
         }
         /** did we pass an id in? If so add it to the nav element*/
         if( isset($params['id']) ){
-            $prepend .= ' id="'.$ids.'"';
+            $prepend .= 'id="'.$ids.'" ';
         }
         /** Did we pass any data objects in? If so add them to the nav element */
         if( isset($params['data']) ){
@@ -92,13 +124,21 @@ class Navigation {
         }
 
         /** Close the element */
-        $prepend .= ' >';
+        $prepend .= '>';
 
         return $prepend;
     }
 
-    private static function _append( $params = array() ){
-        $append = '</'.self::$element_type.'>';
+    /**
+     * Create the ending nav_element
+     *
+     * This defaults to the class object
+     * defaults of an <li> element
+     *
+     * @return string closing html nav_element
+     */
+    private function _append(){
+        $append = '</'.$this->element_type.'>';
         return $append;
     }
 
@@ -109,22 +149,22 @@ class Navigation {
      * @param  array $params additional parameters to pass to the anchor() helper to add to hrefs
      * @return string         returns compiled navigation
      */
-    private static function _build( $url, $title, $params = array() ){
+    private function _build( $url, $title, $params = array() ){
         /** if the passed url is equal to the current uri_string, set this li active */
-        if( $url == self::$ci->uri->uri_string() || $url == current_url() ){
+        if( $url == $this->ci->uri->uri_string() || $url == current_url() ){
 
             $built =
-                    self::_prepend(true).
+                    $this->_prepend(true).
                     anchor( $url, $title, $params ).
-                    self::_append()."\n";
+                    $this->_append()."\n";
 
         /** else if the passed url is equal to the base_url(), set this li active */
         }else{
 
             $built =
-                    self::_prepend().
+                    $this->_prepend().
                     anchor( $url, $title, $params ).
-                    self::_append()."\n";
+                    $this->_append()."\n";
 
         }
         return $built;
