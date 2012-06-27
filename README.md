@@ -21,23 +21,21 @@ OR
 $autoload['sparks'] = array( 'navigation/version' );
 ```
 ### Configuring Navigation Defaults
-Currently the library is very limited when it comes to configuration. This area of the library is planned to be greatly improved and re-worked. For now you can set the `<li>` class name, and the prepend/append before and after the anchor.
+By default the library comes configured with the `$element_type = 'li'` and the `$active_class = "active"` this allows the navigation to conform to Twitters standards by default and work out of the box.
 
-Open the library `sparks/navigation/0.0.1/navigation.php`
+You can re-define these on a per-view basis by doing the following:
 
 ```php
 <?php
-	//what to put in front of the anchor element, on no active links
-	public static $nav_prepend = '<li>';
-	//what to put in front of the anchor element, on active links
-	public static $nav_prepend_active_begin = '<li class="';
-	//what to put in the end of the anchor element, on active links
-	public static $nav_prepend_active_end = '">';
-	//name of the class to put in for active links, you can chain these e.g; 'active menu main hi';
-	public static $nav_active_class = 'active';
-	//what to put at the end of the anchor element, on active links
-	public static $nav_append = '</li>';
+$this->navigation->set_element_type('li');
+$this->navigation->set_active_class('active');
 ?>
+```
+
+**You can also do method chaining:**
+```php
+<?php
+$this->navigation->set_element_type('li')->set_active_class('active')->build();
 ```
 
 ### Build Your Navigation
@@ -50,7 +48,7 @@ Building a single navigation element can be done by passing a singular link to t
  * @param string $title what to display the link as, <a>$title</a>
  * @param array $params additional parameters to apply to the <a> tag
  */
-echo Navigation::build('blog/post', 'Add New Blog Post', array('id' => 'add-new-blog-post') );
+echo $this->navigation->build('blog/post', 'Add New Blog Post', array('id' => 'add-new-blog-post') );
 ?>
 ```
 This will output something like:
@@ -88,7 +86,7 @@ $nav = array(
 /**
  * @param array $nav list of navigation elements to build
  */
-echo Navigation::build($nav);
+echo $this->navigation->build($nav);
 ?>
 ```
 
@@ -104,6 +102,15 @@ This will output something like:
 
 # Change Log
 
+**0.0.3**
+
+ - added: method chaining
+ - added: ability to change active_class, and nav_element via methods
+ - added: the ability to pass parameters to the nav_elements eg; <li id="" data-attr="" class="navigation awesome">
+ - fixed: several code snail's
+ - moved: the prepend functionality into its own private method
+ - moved: the append functionality into its own private method
+
 **0.0.2**
 
  - fixed: typo that wasn't allowing parameters on href's to be passed
@@ -117,9 +124,6 @@ This will output something like:
 Upcoming features that are planned for implementation
 
  - add more methods to control output of the navigation
-	- ability to add additional classes to the `<li>` elements through methods
-	- ability to add id's to the `<li>` elements through methods
 	- ability to customize the structure of the `<li>` elements through methods
- - optimize, and clean the library up
 
 [1]: http://twitter.github.com/bootstrap/ 	"Twitter Bootstrap"
