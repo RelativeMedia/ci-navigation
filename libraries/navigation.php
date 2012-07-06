@@ -45,8 +45,12 @@ class Navigation {
 	    			$u['params'] = array();
 	    		}
 
+                if( !isset($u['children']) ){
+                    $u['children'] = array();
+                }
+
     			/** invoke the builder  */
-    			$built[] = $this->_build( $u['url'], $u['title'], $u['params'] );
+    			$built[] = $this->_build( $u['url'], $u['title'], $u['params'], $u['children'] );
     		}
 
     		/** @var string implode the navigation to create a string of li's to be used in html */
@@ -142,6 +146,16 @@ class Navigation {
         return $append;
     }
 
+    private function _children( $children ){
+        $child = '<ul class="dropdown-menu">';
+        foreach( $children  as $c ){
+            $child .= $this->_prepend().anchor( $c['url'], $c['title'] ).$this->_append();
+        }
+        $child .= '</ul>';
+
+        return $child;
+    }
+
     /**
      * builds the navigation and returns it
      * @param  string $url    string or array of urls, if array,other params are invalid
@@ -149,22 +163,46 @@ class Navigation {
      * @param  array $params additional parameters to pass to the anchor() helper to add to hrefs
      * @return string         returns compiled navigation
      */
-    private function _build( $url, $title, $params = array() ){
+    private function _build( $url, $title, $params, $children ){
         /** if the passed url is equal to the current uri_string, set this li active */
         if( $url == $this->ci->uri->uri_string() || $url == current_url() ){
 
-            $built =
-                    $this->_prepend(true).
-                    anchor( $url, $title, $params ).
-                    $this->_append()."\n";
+            /** If we have children, setup the prepend differently. */
+            if( isset($children) && !empty($children) ){
+                $built = $this->_prepend(true, array('class' => array('dropdown') ) );
+            }else{
+                $built = $this->_prepend(true);
+            }
+
+            $built .= anchor( $url, $title, $params );
+
+            if( isset($children) && !empty($children) ){
+                $built .= "\n".$this->_children( $children )."\n";
+            }
+
+            $built .= $this->_append()."\n";
 
         /** else if the passed url is equal to the base_url(), set this li active */
         }else{
 
-            $built =
-                    $this->_prepend().
-                    anchor( $url, $title, $params ).
-                    $this->_append()."\n";
+            /** If we have children, setup the prepend differently. */
+            if( isset($children) && !empty($children) ){
+                $built = $this->_prepend(false, array('class' => array('dropdown') ) );
+                
+                $params['class'] = "dropdown-toggle";
+                $params['data-toggle'] = "dropdown";
+                $title .= ' <b class="caret"></b>';
+
+            }else{
+                $built = $this->_prepend(false);
+            }
+
+            $built .= anchor( $url, $title, $params );
+
+            if( isset($children) && !empty($children) ){
+                $built .= "\n".$this->_children( $children )."\n";
+            }
+            $built .= $this->_append()."\n";
 
         }
         return $built;
