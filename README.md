@@ -1,31 +1,29 @@
-# README
+#README
 
 I wrote this library initially for my own use, however after several people asking on Stack Overflow i decided to package it and provide it to the public. It is designed by default to work with the [Twitter Bootstrap] [1] v2.0. The library will auto-detect the current active navigation element and add the `.active` class to the corresponding `<li>`.
 
-## Requirements
+##Requirements
  - Codeigniter 2.1.x
  - PHP 5.3.x
 
-## Dependencies
+##Dependencies
  - url_helper - autoloaded, you do not have to load it manually
 
-## Usage
+##Usage
 The library in its current state only accepts a handful of params. It will be extended, at a later date.
 
-### Load The Spark
-```php
-$this->load->spark('navigation/version');
+###Load The Spark
 ```
-OR
-```php
+$this->load->spark('navigation/version');
+//or by autoloading
 $autoload['sparks'] = array( 'navigation/version' );
 ```
-### Configuring Navigation Defaults
+###Configuring Navigation Defaults
 By default the library comes configured with the `$element_type = 'li'` and the `$active_class = "active"` this allows the navigation to conform to Twitters standards by default and work out of the box.
 
 You can re-define these on a per-view basis by doing the following:
 
-```php
+```
 <?php
 $this->navigation->set_parent_element_type('li');
 $this->navigation->set_active_class('active');
@@ -33,15 +31,15 @@ $this->navigation->set_active_class('active');
 ```
 
 **You can also do method chaining:**
-```php
+```
 <?php
 $this->navigation->set_parent_element_type('li')->set_active_class('active')->build();
 ```
 
-### Build Your Navigation
+###Build Your Navigation
 Building a single navigation element can be done by passing a singular link to the `build()` method. If you are using Bootstrap you will put the following code in place of your `<li>` elements in your navigation.
 
-```php
+```
 <?php
 /**
  * @param string $url uri segments, or full URL
@@ -53,13 +51,13 @@ echo $this->navigation->build('blog/post', 'Add New Blog Post', array('id' => 'a
 ```
 This will output something like:
 
-```html
+```
 	<li class="active"><a href="http://example.com/blog/post" id="add-new-blog-post">Add New Blog Post</a></li>
 ```
 
 Or you can build multiple navigations at once, and define `url, title, params` all individually.
 
-```php
+```
 <?php
 //If you don't like your views cluttered with app logic
 //this could be defined in your controller
@@ -92,7 +90,7 @@ echo $this->navigation->build($nav);
 
 This will output something like:
 
-```html
+```
 	<li class="active"><a href="http://example.com/blog/post" id="add-new-blog-post">Add New Blog Post</a></li>
 	<li><a href="http://example.com/">Home</a></li>
 	<li><a href="http://google.com/">Google Search</a></li>
@@ -100,7 +98,7 @@ This will output something like:
 
 
 
-# Change Log
+#Change Log
 
 **0.0.3**
 
@@ -120,7 +118,7 @@ This will output something like:
  - First release
 
 
-# Road Map
+#Road Map
 Upcoming features that are planned for implementation
 
  - add more methods to control output of the navigation
