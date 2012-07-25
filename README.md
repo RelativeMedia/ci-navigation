@@ -27,7 +27,7 @@ You can re-define these on a per-view basis by doing the following:
 
 ```php
 <?php
-$this->navigation->set_element_type('li');
+$this->navigation->set_parent_element_type('li');
 $this->navigation->set_active_class('active');
 ?>
 ```
@@ -35,7 +35,7 @@ $this->navigation->set_active_class('active');
 **You can also do method chaining:**
 ```php
 <?php
-$this->navigation->set_element_type('li')->set_active_class('active')->build();
+$this->navigation->set_parent_element_type('li')->set_active_class('active')->build();
 ```
 
 ### Build Your Navigation
