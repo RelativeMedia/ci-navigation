@@ -13,8 +13,48 @@ class Navigation {
      * html element type for a nav_element
      * @var string
      */
-    public $element_type = 'li';
+    public $parent_element_type = 'li';
 
+    /**
+     * Type of child element to be used,
+     * by default this is a ul.
+     * @var string
+     * @todo create a public method to change this
+     */
+    public $child_element_type = 'ul';
+    /**
+     * Parameters for the child element,
+     * by default this is a class of dropdown-menu
+     * on a ul.
+     * @var string
+     * @todo create a public method to change this
+     */
+    public $child_element_class = 'dropdown-menu';
+    /**
+     * Additional parameters to pass to the parent anchor element
+     * By default this adds a class to the anchor element.
+     * @var array default is class = 'dropdown-toggle'
+     * @todo create a public method to change this
+     */
+    public $child_anchor_params = array( 'class' => 'dropdown-toggle', 'data-toggle' => 'dropdown');
+    /**
+     * The parameters to be set on the parent element of
+     * the dropdown. By default this is an li.
+     * @var array default is class = 'dropdown'
+     * @todo create a public method to change this
+     */
+    public $dropdown_prepend_params = array('class' => 'dropdown');
+    /**
+     * Append an icon to the end of the anchor element for dropdowns
+     * @var string
+     * @todo create a public method to change this
+     */
+    public $dropdown_anchor_caret = ' <b class="caret"></b>';
+
+    /**
+     * Class object container for all of the nav elements
+     * @var string
+     */
     public $nav_elements;
 
     function __construct($params = array()) {
@@ -68,8 +108,8 @@ class Navigation {
      * from the library.
      * @param string $elementType html element type, e.g; li, div, nav
      */
-    public function set_element_type( $elementType ){
-        $this->element_type = $elementType;
+    public function set_parent_element_type( $elementType ){
+        $this->parent_element_type = $elementType;
         return $this;
     }
 
@@ -84,6 +124,56 @@ class Navigation {
     }
 
     /**
+     * allows the child_element_type to be set externally
+     * from the library.
+     * @param string $childElementType html element type, e.g; ul
+     */
+    public function set_child_element_type( $childElementType ){
+        $this->child_element_type = $childElementType;
+        return $this;
+    }
+
+    /**
+     * allows the class to be defined for the child element
+     * externally from the library.
+     * @param string $childElementClass class name of the child element.
+     */
+    public function set_child_element_class( $childElementClass ){
+        $this->child_element_class = $childElementClass;
+        return $this;
+    }
+
+    /**
+     * allows the parameters to be defined for the dropdown 
+     * element. The dropdown element is the parent to the child Elements
+     * @param array $dropdownPrependParams array of parameters e.g; class, data attribs
+     */
+    public function set_dropdown_prepend_params( $dropdownPrependParams ){
+        $this->dropdown_prepend_params = $dropdownPrependParams;
+        return $this;
+    }
+
+    /**
+     * allows the parameters tob e defiend for the child anchor elements
+     * to a dropdown. These elements are by default located within the ul li
+     * @param array $childAnchorParams array of params, e.g; class, data-attribs
+     */
+    public function set_child_anchor_params( $childAnchorParams ){
+        $this->child_anchor_params = $childAnchorParams;
+        return $this;
+    }
+
+    /**
+     * allows the caret, or icon text to be added to the end of the parent anchor
+     * tag for a link with children.
+     * @param string $dropdownAnchorCaret html string of content
+     */
+    public function set_dropdown_anchor_caret( $dropdownAnchorCaret ){
+        $this->dropdown_anchor_caret = $dropdownAnchorCaret;
+        return $this;
+    }
+
+    /**
      * Create the starting nav_element
      *
      * This defaults to the class object defaults of an <li> element
@@ -94,12 +184,15 @@ class Navigation {
      * @return string          returns back the prepended navigation element
      */
     private function _prepend( $active = false, $params = array() ){
-        $prepend = '<'.$this->element_type;
+        $prepend = '<'.$this->parent_element_type;
 
         /** did we pass any class names in? If so, implode the array into a string */
-        if ( isset($params['class']) ){
+        if ( isset($params['class']) && is_array($params['class']) ){
             $classes = implode($params['class'], ' ');
+        }elseif( isset($params['class']) ){
+            $classes = $params['class'];
         }
+
         /** Is the navigation item active? If so prepend the active_class object */
         if ($active){
             /** Since the nav element is active, add the active class */
@@ -142,16 +235,25 @@ class Navigation {
      * @return string closing html nav_element
      */
     private function _append(){
-        $append = '</'.$this->element_type.'>';
+        $append = '</'.$this->parent_element_type.'>';
         return $append;
     }
-
+    /**
+     * Compiles the children list elements
+     * starting at the UL and traversing through
+     * each, creating an LI and an anchor element
+     * for each child.
+     * @param  array $children array of children elements
+     * @return string html string of the child elements
+     */
     private function _children( $children ){
-        $child = '<ul class="dropdown-menu">';
+        $child = '<'.$this->child_element_type;
+        $child .= ' class="'.$this->child_element_class.'">';
+
         foreach( $children  as $c ){
             $child .= $this->_prepend().anchor( $c['url'], $c['title'] ).$this->_append();
         }
-        $child .= '</ul>';
+        $child .= '</'.$this->child_element_type.'>';
 
         return $child;
     }
@@ -169,7 +271,7 @@ class Navigation {
 
             /** If we have children, setup the prepend differently. */
             if( isset($children) && !empty($children) ){
-                $built = $this->_prepend(true, array('class' => array('dropdown') ) );
+                $built = $this->_prepend(true, $this->dropdown_prepend_params );
             }else{
                 $built = $this->_prepend(true);
             }
@@ -187,11 +289,9 @@ class Navigation {
 
             /** If we have children, setup the prepend differently. */
             if( isset($children) && !empty($children) ){
-                $built = $this->_prepend(false, array('class' => array('dropdown') ) );
-                
-                $params['class'] = "dropdown-toggle";
-                $params['data-toggle'] = "dropdown";
-                $title .= ' <b class="caret"></b>';
+                $built = $this->_prepend(false, $this->dropdown_prepend_params );
+                $params = $this->child_anchor_params;
+                $title .= $this->dropdown_anchor_caret;
 
             }else{
                 $built = $this->_prepend(false);
